@@ -1,0 +1,83 @@
+<ul class="nav nav-pills justify-content-end">
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Hello {{name}}</a>
+        <div class="dropdown-menu">
+          <a class="dropdown-item" href="#">Profile</a>
+          <a class="dropdown-item" href="#">Logout</a>
+          
+      </li>
+  </ul>
+ 
+ 
+ <!--card 1 Resource-->
+ <div class="row justify-content-center">
+    <div class="col-md-3">
+        <div class="card-counter resource">
+            <i class="fa fa-hand-paper-o" aria-hidden="true"></i>
+            <span class="count-resources">12</span> <br>
+            <span class="count-name">Resources</span>
+        </div>
+    </div>
+<!--card 2 Tasks -->
+    <div class="col-md-3">
+        <div class="card-counter tasks">
+            <i class="fa fa-tasks" aria-hidden="true"></i>
+            <span class="count-resources">12</span> <br>
+            <span class="count-name">Tasks</span>
+        </div>
+</div>
+
+<!--Resource table-->
+<table class="table hidden-table">
+<thead>
+  <tr>
+    <th scope="col">Resource Name</th>
+    <th scope="col">Status</th>
+    <th scope="col">Booked By</th>
+    <th scope="col">End Time</th>
+    <th scope="col">Action</th>
+
+  </tr>
+</thead>
+<tbody> 
+</tbody>
+</table>
+
+<!--Task Table-->
+<table class="table hidden-table-tasks">
+<thead>
+  <tr>
+    <th scope="col">Requested Resource</th>
+    <th scope="col">Status</th>
+    <th scope="col">Requested By</th>
+    <th scope="col">Time of Request</th>
+    <th scope="col">Action</th>
+
+  </tr>
+</thead>
+<tbody> 
+</tbody>
+</table>
+
+
+
+
+
+
+
+
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<script src="../static/js/script_dashboard.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.js"></script>
+
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+<link rel="stylesheet" href="../static/css/style_dashboard.css">
+
+
