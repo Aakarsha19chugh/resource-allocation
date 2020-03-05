@@ -1,0 +1,30 @@
+.user-table{
+    border-radius: 5px;
+    width: 70%;
+    margin: 0px auto;
+    float: none;
+    
+}
+
+.resource-table{
+
+    border-radius: 5px;
+    width: 70%;
+    margin: 0px auto;
+    float: none;
+}
+
+.task-table{
+
+    border-radius: 5px;
+    width: 70%;
+    margin: 0px auto;
+    float: none;
+}
+
+.table-responsive {
+    max-height:400px;
+}
+
+.table .user-table thead th { position: sticky; top: 0; }
+
