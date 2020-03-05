@@ -5,17 +5,23 @@ import json
 from flask import jsonify
 import datetime
 from dateutil.parser import parse
+from flask_admin import Admin
 
 app = Flask(__name__)
 
 client = pymongo.MongoClient("mongodb+srv://aakarshachug:aakarsha123@cluster0-qtf6n.mongodb.net/test?retryWrites=true&w=majority")
 db = client.resource_allocation
 
+
 @app.route('/')
 def index():
     if 'username' in session:
         s = session['username']
-        return render_template('index_dashboard.html' , name = s)
+        a = session['admin']
+        if a == False:
+            return render_template('index_dashboard.html' , name = s)
+        else:
+            return render_template('admin_dashboard.html' , name = s)
 
     return render_template('index.html')
 
@@ -36,6 +42,7 @@ def login():
          user_pass = login_user['password']
          if bcrypt.checkpw(request.form['password-login'].encode('utf-8'), user_pass):
             session['username'] = request.form['username-login']
+            session['admin'] = login_user['is_admin']
             return redirect(url_for('index'))
 
     return 'Invalid username/password combination'
@@ -97,6 +104,7 @@ def allresources():
             requested.append(document['resource'])
         
         for document in resources.find():
+            print(document)
             if document['r_name'] in requested:
                 ans = {'resource' : document['r_name']  , 'status' : document['status'],
                 'booked_by' : document['slot_info']['blocked_by'],
@@ -228,35 +236,192 @@ def releaseresource():
         r_json = x['r_name']
         resources = db.resources
         tasks = db.tasks
-        doc = tasks.find( {'resource' : r_json, 'status' : 'pending'})
-        print(doc.count())
-        
-        if doc.count() > 0:
-            doc = doc.sort("request_time" , 1)
-            new_owner_doc = doc[0]
-            resources.update_one({"r_name" : r_json} , {"$set" : {"slot_info" : {
 
-                "start_time" : datetime.datetime.now(),
-                "end_time" : new_owner_doc['end_time'],
-                "blocked_by" : new_owner_doc['requested_by'] } }})
+        if tasks.find({'resource' : r_json , 'requested_to' : s , 'status' : 'pending'}):
+            y = tasks.find_one({"resource" : r_json, "status" : "pending" , "requested_to" : s})
+            resources.update_one({'r_name' : r_json} ,{'$set' : {'slot_info' : 
+            {'blocked_by' : y['requested_by'] , 'start_time' : datetime.datetime.now() , 'end_time' : y['end_time']  }}})
             
-            doc1 = tasks.find_one({"resource" : r_json , "requested_by" : new_owner_doc['requested_by'] , "requested_to" : s , "status" : "pending"})
-            print(doc1['_id'])
+            doc1 = tasks.find_one({"resource" : r_json , "requested_by" : y['requested_by'] , "requested_to" : s , "status" : "pending"})
             tasks.update_one({"_id" :  doc1['_id']} , {"$set": {"status" : "approved"}})
-
-            bulk = tasks.initialize_unordered_bulk_op()
-            bulk.find({"resource" : r_json , "requested_to" : s , "status" : "pending" , "requested_by" : {"$ne" : new_owner_doc['requested_by'] }}).update({ "$set": { "requested_to": new_owner_doc['requested_by']} })
-            bulk.execute()
+            tasks.update_many({'resource' : r_json , 'requested_to' : s , 'status' : 'pending'}, {'$set' : {
+                'requested_to' : y['requested_by']}})
+            return ({"status" : 'released'})
+                
         else:
             resources.update_one({"r_name" : r_json} , {"$set" : {"status" : "available" , "slot_info" : {
 
                 "start_time" : None,
                 "end_time" : None,
                 "blocked_by" : None } }})
+            return ({"status" : 'released'})
 
-       
-    return jsonify({"status" : "released!"})
-    
+
+
+# Admin functions----------------------------------------------
+
+@app.route('/addusername', methods=['POST'])
+def addusername():
+    if request.method == "POST":
+        x = request.get_json()
+        print(x)
+        username = x['username']
+        password = x['password']
+        email = x['email']
+        print(username , password , email)
+        users = db.user_credentials
+        existing_user = users.find_one({'username' : username})
+        existing_email = users.find_one({'email' : email}) 
+        
+        if existing_user is None and existing_email is None:
+            hashpass = bcrypt.hashpw(password.encode('utf8'), bcrypt.gensalt())
+            print(hashpass)
+            users.insert({'username' : username, 'password' : hashpass , 'email' :email,
+            "is_admin" : False
+            
+             })
+        return jsonify({"status" : "User Added"})
+        
+
+@app.route('/displayusers', methods=['POST'])
+def displayusers():
+    if request.method == 'POST':
+        users = db.user_credentials
+        result = []
+        for document in users.find({'is_admin' : False}):
+            ans = {'username' : document['username'] , 'email' : document['email']}
+            result.append(ans)
+        
+        print(result)
+        return jsonify({'users' : result})
+
+@app.route('/admintasks', methods=['POST'])
+def admintasks():
+    if request.method == 'POST':
+        tasks = db.tasks
+        result = []
+        for document in tasks.find({"status" : "pending"}):
+            ans = {'requested_by' : document['requested_by'] , 'requested_to' : document['requested_to'],
+                 'resource' : document['resource'] , 'request_time' : document['request_time']
+            
+            }
+
+            result.append(ans)
+        
+        print(result)
+        return jsonify({'tasks' : result})
+
+@app.route('/removeuser', methods=['POST'])
+def removeuser():
+    if request.method == 'POST':
+        users = db.user_credentials
+        tasks = db.tasks
+        resources = db.resources
+        
+        # get username
+        x = request.get_json()
+        username = x['username']
+
+        rown = []
+        #check resources blocked by the user to be deleted
+        for document in resources.find({'slot_info.blocked_by' : username}):
+            rown.append(document['r_name'])
+        
+        for res in rown:
+            #doc =  tasks.find({'requested_to' : username , 'status' : 'pending' , 'resource' : res})
+            if tasks.count_documents({'requested_to' : username , 'status' : 'pending' , 'resource' : res}) > 0:
+                
+                new_owner = tasks.find_one({'requested_to' : username , 'status' : 'pending' , 'resource' : res})
+                resources.update_one({'r_name' : res} , {'$set' : {'slot_info' : {
+
+                    'blocked_by' : new_owner['requested_by'],
+                    'start_time' : datetime.datetime.now(),
+                    'end_time' : new_owner['end_time']  
+                    }}})
+
+                doc1 = tasks.find_one({"resource" : res , "requested_by" : new_owner['requested_by'] , "requested_to" : username , "status" : "pending"})
+                tasks.update_one({"_id" :  doc1['_id']} , {"$set": {"status" : "approved"}})
+
+                tasks.update_many({'resource' : res , 'requested_to' : username , 'status' : 'pending'}, {'$set' : {
+                'requested_to' : new_owner['requested_by']}})
+            
+            else:
+                resources.update_one({"r_name" : res} , {"$set" : {"status" : "available" , "slot_info" : {
+
+                "start_time" : None,
+                "end_time" : None,
+                "blocked_by" : None } }})
+        
+        users.delete_one({'username' : username})
+        
+        return ({"status" : 'user removed!'})
+
+
+@app.route('/addresource', methods=['POST'])
+def addresource():
+    if request.method == "POST":
+        x = request.get_json()
+        print(x)
+        r_name = x['r_name']
+        resources = db.resources
+        existing_resource = resources.find_one({'r_name' : r_name})
+        
+        
+        if existing_resource is None:
+            resources.insert({'r_name' : r_name, 'status' : 'available', 'slot_info' : {
+                'start_time' : None,
+                'end_time' : None,
+                'blocked_by' : None
+                }
+            
+             })
+        return jsonify({"status" : "Resource added"})
+
+
+@app.route('/removeresource', methods=['POST'])
+def removeresource():
+    if request.method == 'POST':
+        x = request.get_json()
+        r_name = x['resource_name']
+        resources = db.resources
+        tasks = db.tasks
+
+        resources.delete_one({"r_name" : r_name})
+        tasks.delete_many({"resource" : r_name , 'status' : "pending"})
+        
+        return ({"status" : "resource deleted!"})
+
+
+@app.route('/bookonbehalf', methods=['POST'])
+def bookonbehalf():
+    if request.method == "POST":
+        x = request.get_json()
+        status = x['status']
+        if status == "available":
+            resource = db.resources
+
+            resource.update_one({'r_name' : x['resource_name']} , {'$set' : {'status' : 'booked' , 'slot_info' :{
+                'start_time' : datetime.datetime.now(),
+                'end_time' : x['new_end_time'],
+                'blocked_by' : x['new_owner']
+
+
+            }}})
+        else:
+            tasks = db.tasks
+            tasks.insert_one({'requested_by' : x['new_owner'] , 'requested_to' : x['blocked_by'] , 'status' : 'pending',
+        
+            'resource' : x['resource_name'] , 'request_time' : datetime.datetime.now() , 'end_time' : x['new_end_time'] })
+
+    return ({"status" : "resource booked!"})
+
+
+
+
+
+
+
+
 
 if __name__ == '__main__':
     app.secret_key = 'mysecret'
