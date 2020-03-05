@@ -1,0 +1,260 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Admin dashboard</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <link rel="icon" href="/docs/4.1/assets/img/favicons/favicon.ico">
+        
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+<link rel="stylesheet" href="../static/css/style_admin_dashboard.css">
+<link rel="canonical" href="https://getbootstrap.com/docs/4.1/examples/dashboard/">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/css/bootstrap-datetimepicker.min.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+<style type="text/css"> @-webkit-keyframes chartjs-render-animation{from{opacity:0.99}to{opacity:1}}@keyframes chartjs-render-animation{from{opacity:0.99}to{opacity:1}}.chartjs-render-monitor{-webkit-animation:chartjs-render-animation 0.001s;animation:chartjs-render-animation 0.001s;}</style>
+
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">
+            <img src="E:\Resource\templates\db.png" width="30" height="30" class="d-inline-block align-top" alt="">
+            Darwinbox</a>
+      <!--Nav Bar items-->
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto">
+            
+            <li class="nav-item">
+              <a class="nav-link" href="#user">Users</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#resource">Resources</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#task">Tasks</a>
+              </li>
+            </ul>
+        <!--Logout dropdown-->
+          <ul class="nav nav-pills justify-content-end">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Hello {{name}}</a>
+                <div class="dropdown-menu">
+                  <a class="dropdown-item" href="#">Profile</a>
+                  <form action="{{ url_for('logout') }}" method="POST">
+                  <a class="dropdown-item" onclick= "this.parentNode.submit()">Logout</a> </form>
+                  
+              </li>
+          </ul>
+        </div>
+      </nav>
+      <div class="container">
+        <!--USER TABLE-->
+      <div class="menu-content user">
+        <div class="table-responsive">
+        <table class="table user-table table-bordered table-hover">
+          <thead>
+            <tr>
+              <th scope="col">Username</th>
+              <th scope="col">Email</th>
+              <th scope="col">Action</th>
+          
+            </tr>
+          </thead>
+          <tbody> 
+          </tbody>
+          </table>
+          </div>
+
+
+
+          <button type="button" class="btn btn-info" id = "add-user" data-toggle="modal" data-target="#myModal-user"> Add User </button>
+          
+          
+
+          <div id="myModal-user" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+          
+              <!-- Modal content-->
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal">&times;</button>
+                  <h4 class="modal-title"></h4>
+                </div>
+                <div class="modal-body">
+                  <form>  
+                    <div class="form-group row">
+                      <label for="inputEmail3" class="col-sm-2 col-form-label">Email</label>
+                      <div class="col-sm-10">
+                        <input type="email" class="form-control" id ="add-email" placeholder="Email">
+                      </div>
+                    </div>
+                    <div class="form-group row">
+                      <label for="add-user" class="col-sm-2 col-form-label">Username</label>
+                      <div class="col-sm-10">
+                        <input type="text" class="form-control" id="add-username" placeholder="Username">
+                      </div>
+                    </div>
+                    <div class="form-group row">
+                      <label for="add-password" class="col-sm-2 col-form-label">Password</label>
+                      <div class="col-sm-10">
+                        <input type="password" class="form-control" id="add-password" placeholder="Password">
+                      </div>
+                    </div>
+            
+                    <div class="form-group row">
+                      <div class="col-sm-10">
+                        <button type="submit" class="btn btn-primary" id= "adduser">Register User</button>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+                  
+                </div>
+              
+              </div>
+          
+            </div>
+
+
+      </div>
+      <div class="menu-content resource">
+        <div class="table-responsive">
+        <table class="table resource-table table-bordered table-hover">
+          <thead>
+            <tr>
+              <th scope="col">Resource Name</th>
+              <th scope="col">Status</th>
+              <th scope="col">Blocked by</th>
+              <th scope="col">End Time</th>
+              <th scope="col">Action</th>
+
+          
+            </tr>
+          </thead>
+          <tbody> 
+          </tbody>
+          </table>
+          </div>
+
+          <button type="button" class="btn btn-info" id = "add-resource" data-toggle="modal" data-target="#myModal-resource">Add Resource</button>
+
+          <div id="myModal-resource" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+          
+              <!-- Modal content-->
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal">&times;</button>
+                  <h4 class="modal-title"></h4>
+                </div>
+                <div class="modal-body">
+                  <form>  
+                    
+                    <div class="form-group row">
+                      <label for="add-user" class="col-sm-2 col-form-label">Resource Name</label>
+                      <div class="col-sm-10">
+                        <input type="text" class="form-control" id="add-resourcename" placeholder="Resource Name">
+                      </div>
+                    </div>
+                   
+            
+                    <div class="form-group row">
+                      <div class="col-sm-10">
+                        <button type="submit" class="btn btn-primary" id= "addresource">Add Resource</button>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+                  
+                </div>
+              
+              </div>
+          
+            </div>
+
+            <div id="book-resource-admin" class="modal fade" role="dialog">
+              <div class="modal-dialog">
+            
+                <!-- Modal content to Book Resource on behalf-->
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Modal Header</h4>
+                  </div>
+                  <div class="modal-body">
+
+                    <div class="form-group row">
+                      <label for="book-user" class="col-sm-2 col-form-label">Book For</label>
+                      <div class="col-sm-10">
+                        <input type="text" class="form-control" id="book-resource-user" placeholder="Username">
+                      </div>
+                    </div>
+                      <div class="form-group">
+                          <label class="control-label">Resource End Time</label>
+                          <div class='input-group date' id='book-resource-date'>
+                             <input type='text' class="form-control" id= "endtimetext" />
+                             <span class="input-group-addon">
+                             <span class="glyphicon glyphicon-calendar"></span>
+                             </span>
+                          </div>
+                       </div> </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal" id = "submit-book-resource">Book</button>
+                  </div>
+                </div>
+            
+              </div>
+            </div>
+
+</div>
+      <div class="menu-content task">
+        <div class="table-responsive">
+        <table class="table task-table table-bordered table-hover">
+          <thead>
+            <tr>
+              <th scope="col">Resource Requested</th>
+              <th scope="col">Requested By</th>
+              <th scope="col">Requested To</th>
+              <th scope="col">Request Time</th>
+              <th scope="col">Action</th>
+
+          
+            </tr>
+          </thead>
+          <tbody> 
+          </tbody>
+          </table>
+          </div>
+      </div>
+
+      </div>
+
+      <!--Scripts-->
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<script src="../static/js/script_admin_dashboard.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.js"></script>
+<!--Datetime picker scripts-->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/momentjs/2.14.1/moment.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/js/bootstrap-datetimepicker.min.js"></script>
+
+
+
+
+
+</body>
+
+
+
+</html>
